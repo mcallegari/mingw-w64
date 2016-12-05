@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -34,4 +34,8 @@ LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo)
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
+#ifndef _WIN64
 LONG (WINAPI *__MINGW_IMP_SYMBOL(UnhandledExceptionFilter))(struct _EXCEPTION_POINTERS *) asm("__imp__UnhandledExceptionFilter@4") = UnhandledExceptionFilter;
+#else
+LONG (WINAPI *__MINGW_IMP_SYMBOL(UnhandledExceptionFilter))(struct _EXCEPTION_POINTERS *) asm("__imp_UnhandledExceptionFilter") = UnhandledExceptionFilter;
+#endif

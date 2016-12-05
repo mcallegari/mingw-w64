@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -34,4 +34,8 @@ VOID WINAPI Sleep(DWORD dwMilliseconds)
     WaitForSingleObjectEx(GetCurrentThread(), dwMilliseconds, FALSE);
 }
 
+#ifndef _WIN64
 VOID (WINAPI *__MINGW_IMP_SYMBOL(Sleep))(DWORD dwMilliseconds) asm("__imp__Sleep@4") = Sleep;
+#else
+VOID (WINAPI *__MINGW_IMP_SYMBOL(Sleep))(DWORD dwMilliseconds) asm("__imp_Sleep") = Sleep;
+#endif

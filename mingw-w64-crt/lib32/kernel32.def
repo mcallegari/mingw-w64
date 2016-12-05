@@ -150,6 +150,7 @@ CreateFileMappingA@24
 CreateFileMappingNumaA@28
 CreateFileMappingNumaW@28
 CreateFileMappingW@24
+CreateFileMappingFromApp@24
 CreateFileTransactedA@40
 CreateFileTransactedW@40
 CreateFileW@28
@@ -179,6 +180,7 @@ CreateProcessInternalA@48
 CreateProcessInternalW@48
 CreateProcessW@40
 CreateRemoteThread@28
+CreateRemoteThreadEx@32
 CreateSemaphoreA@16
 CreateSemaphoreExA@24
 CreateSemaphoreExW@24
@@ -847,6 +849,7 @@ MapViewOfFile@20
 MapViewOfFileEx@24
 MapViewOfFileExNuma@28
 MapViewOfFileVlm@28
+MapViewOfFileFromApp@20
 Module32First@8
 Module32FirstW@8
 Module32Next@8
@@ -1212,6 +1215,7 @@ VirtualAlloc@16
 VirtualAllocEx@20
 VirtualAllocExNuma@24
 VirtualAllocVlm@24
+VirtualAllocFromApp@16
 VirtualBufferExceptionHandler@12
 VirtualFree@12
 VirtualFreeEx@16

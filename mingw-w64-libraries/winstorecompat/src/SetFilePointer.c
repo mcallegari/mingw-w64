@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -56,4 +56,8 @@ DWORD WINAPI SetFilePointer(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistance
     return newpos.u.LowPart;
 }
 
+#ifndef _WIN64
 DWORD (WINAPI *__MINGW_IMP_SYMBOL(SetFilePointer))(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod) asm("__imp__SetFilePointer@16") = SetFilePointer;
+#else
+DWORD (WINAPI *__MINGW_IMP_SYMBOL(SetFilePointer))(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod) asm("__imp_SetFilePointer") = SetFilePointer;
+#endif

@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -35,4 +35,8 @@ UINT WINAPI SetErrorMode(UINT uMode)
     return InterlockedExchange(&oldMode, (LONG)uMode);
 }
 
+#ifndef _WIN64
 UINT (WINAPI *__MINGW_IMP_SYMBOL(SetErrorMode))(UINT uMode) asm("__imp__SetErrorMode@4") = SetErrorMode;
+#else
+UINT (WINAPI *__MINGW_IMP_SYMBOL(SetErrorMode))(UINT uMode) asm("__imp_SetErrorMode") = SetErrorMode;
+#endif

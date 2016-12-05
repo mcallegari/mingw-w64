@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Rafaël Carré
 
@@ -39,4 +39,8 @@ HANDLE WINAPI CreateEventW(LPSECURITY_ATTRIBUTES lpEventAttributes, BOOL bManual
     return CreateEventExW(lpEventAttributes, lpName, flags, EVENT_ALL_ACCESS);
 }
 
-HANDLE (WINAPI *_imp__CreateEventW)(LPSECURITY_ATTRIBUTES lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCWSTR lpName) asm("__imp__CreateEventW@16") = CreateEventW;
+#ifndef _WIN64
+HANDLE (WINAPI *__MINGW_IMP_SYMBOL(CreateEventW))(LPSECURITY_ATTRIBUTES lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCWSTR lpName) asm("__imp__CreateEventW@16") = CreateEventW;
+#else
+HANDLE (WINAPI *__MINGW_IMP_SYMBOL(CreateEventW))(LPSECURITY_ATTRIBUTES lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCWSTR lpName) asm("__imp_CreateEventW") = CreateEventW;
+#endif

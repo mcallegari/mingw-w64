@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -41,4 +41,8 @@ DWORD WINAPI GetFileAttributesW(LPCWSTR lpFileName)
         return INVALID_FILE_ATTRIBUTES;
 }
 
+#ifndef _WIN64
 DWORD (WINAPI *__MINGW_IMP_SYMBOL(GetFileAttributesW))(LPCWSTR lpFileName) asm("__imp__GetFileAttributesW@4") = GetFileAttributesW;
+#else
+DWORD (WINAPI *__MINGW_IMP_SYMBOL(GetFileAttributesW))(LPCWSTR lpFileName) asm("__imp_GetFileAttributesW") = GetFileAttributesW;
+#endif

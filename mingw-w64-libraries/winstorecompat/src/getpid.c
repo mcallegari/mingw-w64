@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -33,4 +33,8 @@ int getpid(void)
     return GetCurrentProcessId();
 }
 
+#ifndef _WIN64
 int (*__MINGW_IMP_SYMBOL(getpid))(void) asm("__imp__getpid") = getpid;
+#else
+int (*__MINGW_IMP_SYMBOL(getpid))(void) asm("__imp_getpid") = getpid;
+#endif

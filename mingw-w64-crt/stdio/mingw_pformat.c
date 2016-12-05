@@ -77,13 +77,13 @@
 
 /* FIXME: The following belongs in values.h, but current MinGW
  * has nothing useful there!  OTOH, values.h is not a standard
- * header, and it's use may be considered obsolete; perhaps it
+ * header, and its use may be considered obsolete; perhaps it
  * is better to just keep these definitions here.
  */
 
 #include <pshpack1.h>
 /* workaround gcc bug */
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #define ATTRIB_GCC_STRUCT __attribute__((gcc_struct))
 #else
 #define ATTRIB_GCC_STRUCT
@@ -465,6 +465,7 @@ void __pformat_putc( int c, __pformat_t *stream )
 static
 void __pformat_putchars( const char *s, int count, __pformat_t *stream )
 {
+#ifndef __BUILD_WIDEAPI
   /* Handler for `%c' and (indirectly) `%s' conversion specifications.
    *
    * Transfer characters from the string buffer at `s', character by
@@ -508,7 +509,56 @@ void __pformat_putchars( const char *s, int count, __pformat_t *stream )
 
   /* Emit the data...
    */
-#ifdef __BUILD_WIDEAPI
+  while( count-- )
+    /*
+     * copying the requisite number of characters from the input.
+     */
+    __pformat_putc( *s++, stream );
+
+  /* If we still haven't consumed the entire specified field width,
+   * we must be doing flush left justification; any residual width
+   * must be filled with blanks, to the right of the output value.
+   */
+  while( stream->width-- > 0 )
+    __pformat_putc( '\x20', stream );
+
+#else  /* __BUILD_WIDEAPI */
+
+  int len;
+
+  if( (stream->precision >= 0) && (count > stream->precision) )
+    count = stream->precision;
+
+  if( (stream->flags & PFORMAT_TO_FILE) && (stream->flags & PFORMAT_NOLIMIT) )
+  {
+    int __cdecl __ms_fwprintf(FILE *, const wchar_t *, ...);
+
+    if( stream->width > count )
+    {
+      if( (stream->flags & PFORMAT_LJUSTIFY) == 0 )
+        len = __ms_fwprintf( (FILE *)(stream->dest), L"%*.*S", stream->width, count, s );
+      else
+        len = __ms_fwprintf( (FILE *)(stream->dest), L"%-*.*S", stream->width, count, s );
+    }
+    else
+    {
+      len = __ms_fwprintf( (FILE *)(stream->dest), L"%.*S", count, s );
+    }
+    if( len > 0 )
+      stream->count += len;
+    stream->width = PFORMAT_IGNORE;
+    return;
+  }
+
+  if( stream->width > count )
+    stream->width -= count;
+  else
+    stream->width = PFORMAT_IGNORE;
+
+  if( (stream->width > 0) && ((stream->flags & PFORMAT_LJUSTIFY) == 0) )
+    while( stream->width-- )
+      __pformat_putc( '\x20', stream );
+
   {
     /* mbrtowc */
     size_t l;
@@ -531,20 +581,11 @@ void __pformat_putchars( const char *s, int count, __pformat_t *stream )
       __pformat_putc((int)w[0], stream);
     }
   }
-#else
-  while( count-- )
-    /*
-     * copying the requisite number of characters from the input.
-     */
-    __pformat_putc( *s++, stream );
-#endif
 
-  /* If we still haven't consumed the entire specified field width,
-   * we must be doing flush left justification; any residual width
-   * must be filled with blanks, to the right of the output value.
-   */
   while( stream->width-- > 0 )
     __pformat_putc( '\x20', stream );
+
+#endif  /* __BUILD_WIDEAPI */
 }
 
 static
@@ -563,12 +604,17 @@ void __pformat_puts( const char *s, __pformat_t *stream )
    * (after first verifying that the input pointer is not NULL).
    */
   if( s == NULL ) s = "(null)";
-  __pformat_putchars( s, strlen( s ), stream );
+
+  if( stream->precision >= 0 )
+    __pformat_putchars( s, strnlen( s, stream->precision ), stream );
+  else
+    __pformat_putchars( s, strlen( s ), stream );
 }
 
 static
 void __pformat_wputchars( const wchar_t *s, int count, __pformat_t *stream )
 {
+#ifndef __BUILD_WIDEAPI
   /* Handler for `%C'(`%lc') and `%S'(`%ls') conversion specifications;
    * (this is a wide character variant of `__pformat_putchars()').
    *
@@ -613,27 +659,67 @@ void __pformat_wputchars( const wchar_t *s, int count, __pformat_t *stream )
   /* Emit the data, converting each character from the wide
    * to the multibyte domain as we go...
    */
-#ifdef __BUILD_WIDEAPI
-  len = count;
-  while(len-- > 0 && *s != 0)
-  {
-      __pformat_putc(*s++, stream);
-  }
-  count = len;
-#else
   while( (count-- > 0) && ((len = wcrtomb( buf, *s++, &state )) > 0) )
   {
     char *p = buf;
     while( len-- > 0 )
       __pformat_putc( *p++, stream );
   }
-#endif
+
   /* If we still haven't consumed the entire specified field width,
    * we must be doing flush left justification; any residual width
    * must be filled with blanks, to the right of the output value.
    */
   while( stream->width-- > 0 )
     __pformat_putc( '\x20', stream );
+
+#else  /* __BUILD_WIDEAPI */
+
+  int len;
+
+  if( (stream->precision >= 0) && (count > stream->precision) )
+    count = stream->precision;
+
+  if( (stream->flags & PFORMAT_TO_FILE) && (stream->flags & PFORMAT_NOLIMIT) )
+  {
+    int __cdecl __ms_fwprintf(FILE *, const wchar_t *, ...);
+
+    if( stream->width > count )
+    {
+      if( (stream->flags & PFORMAT_LJUSTIFY) == 0 )
+        len = __ms_fwprintf( (FILE *)(stream->dest), L"%*.*s", stream->width, count, s );
+      else
+        len = __ms_fwprintf( (FILE *)(stream->dest), L"%-*.*s", stream->width, count, s );
+    }
+    else
+    {
+      len = __ms_fwprintf( (FILE *)(stream->dest), L"%.*s", count, s );
+    }
+    if( len > 0 )
+      stream->count += len;
+    stream->width = PFORMAT_IGNORE;
+    return;
+  }
+
+  if( stream->width > count )
+    stream->width -= count;
+  else
+    stream->width = PFORMAT_IGNORE;
+
+  if( (stream->width > 0) && ((stream->flags & PFORMAT_LJUSTIFY) == 0) )
+    while( stream->width-- )
+      __pformat_putc( '\x20', stream );
+
+  len = count;
+  while(len-- > 0 && *s != 0)
+  {
+      __pformat_putc(*s++, stream);
+  }
+
+  while( stream->width-- > 0 )
+    __pformat_putc( '\x20', stream );
+
+#endif  /* __BUILD_WIDEAPI */
 }
 
 static
@@ -653,7 +739,11 @@ void __pformat_wcputs( const wchar_t *s, __pformat_t *stream )
    * (after first verifying that the input pointer is not NULL).
    */
   if( s == NULL ) s = L"(null)";
-  __pformat_wputchars( s, wcslen( s ), stream );
+
+  if( stream->precision >= 0 )
+    __pformat_wputchars( s, wcsnlen( s, stream->precision ), stream );
+  else
+    __pformat_wputchars( s, wcslen( s ), stream );
 }
 
 static
@@ -1021,9 +1111,32 @@ char *__pformat_cvt( int mode, __pformat_fpreg_t x, int nd, int *dp, int *sign )
   int k; unsigned int e = 0; char *ep;
   static FPI fpi = { 64, 1-16383-64+1, 32766-16383-64+1, FPI_Round_near, 0, 14 /* Int_max */ };
  
+  if( sizeof( double ) == sizeof( long double ) )
+  {
+    /* The caller has written into x.__pformat_fpreg_ldouble_t, which
+     * actually isn't laid out in the way the rest of the union expects it.
+     */
+    int exp = (x.__pformat_fpreg_mantissa >> 52) & 0x7ff;
+    unsigned long long mant = x.__pformat_fpreg_mantissa & 0x000fffffffffffffULL;
+    int integer = exp ? 1 : 0;
+    int signbit = x.__pformat_fpreg_mantissa >> 63;
+
+    k = __fpclassify( x.__pformat_fpreg_double_t );
+
+    if (exp == 0x7ff)
+      exp = 0x7fff;
+    else if (exp != 0)
+      exp = exp - 1023 + 16383;
+    x.__pformat_fpreg_mantissa = (mant << 11) | ((unsigned long long)integer << 63);
+    x.__pformat_fpreg_exponent = exp | (signbit << 15);
+  }
+  else
+    k = __fpclassifyl( x.__pformat_fpreg_ldouble_t );
+
+
   /* Classify the argument into an appropriate `__gdtoa()' category...
    */
-  if( (k = __fpclassifyl( x.__pformat_fpreg_ldouble_t )) & FP_NAN )
+  if( k & FP_NAN )
     /*
      * identifying infinities or not-a-number...
      */
@@ -2284,6 +2397,10 @@ __pformat (int flags, void *dest, int max, const APICHAR *fmt, va_list argv)
                                                    -1 means to be determined. */
   };
 
+#ifdef __BUILD_WIDEAPI
+  const APICHAR *literal_string_start = NULL;
+#endif
+
   format_scan: while( (c = *fmt++) != 0 )
   {
     /* Format string parsing loop...
@@ -2307,6 +2424,15 @@ __pformat (int flags, void *dest, int max, const APICHAR *fmt, va_list argv)
       /* Restart capture for dynamic field width and precision specs...
        */
       int *width_spec = &stream.width;
+
+  #ifdef __BUILD_WIDEAPI
+      if (literal_string_start)
+      {
+        stream.width = stream.precision = PFORMAT_IGNORE;
+        __pformat_wputchars( literal_string_start, fmt - literal_string_start - 1, &stream );
+        literal_string_start = NULL;
+      }
+  #endif
 
       /* Reset initial state for flags, width and precision specs...
        */
@@ -2332,7 +2458,12 @@ __pformat (int flags, void *dest, int max, const APICHAR *fmt, va_list argv)
 	     * on GNU/Linux does NOT appear to require this, but POSIX
 	     * and SUSv3 do seem to demand it).
 	     */
+    #ifndef __BUILD_WIDEAPI
 	    __pformat_putc( c, &stream );
+    #else
+        stream.width = stream.precision = PFORMAT_IGNORE;
+        __pformat_wputchars( L"%", 1, &stream );
+    #endif
 	    goto format_scan;
 
 	  case 'C':
@@ -2860,8 +2991,8 @@ __pformat (int flags, void *dest, int max, const APICHAR *fmt, va_list argv)
 	       */
 	      length = PFORMAT_LENGTH_LONG;
 
-	      state = PFORMAT_END;
-	      break;
+	    state = PFORMAT_END;
+	    break;
 
 	  case 'L':
 	    /*
@@ -3088,7 +3219,12 @@ __pformat (int flags, void *dest, int max, const APICHAR *fmt, va_list argv)
 	       * backtrack, and emit it as literal text...
 	       */
 	      fmt = backtrack;
+      #ifndef __BUILD_WIDEAPI
 	      __pformat_putc( '%', &stream );
+      #else
+          stream.width = stream.precision = PFORMAT_IGNORE;
+          __pformat_wputchars( L"%", 1, &stream );
+      #endif
 	      goto format_scan;
 	    }
 	}
@@ -3099,12 +3235,25 @@ __pformat (int flags, void *dest, int max, const APICHAR *fmt, va_list argv)
       /* We just parsed a character which is not included within any format
        * specification; we simply emit it as a literal.
        */
+  #ifndef __BUILD_WIDEAPI
       __pformat_putc( c, &stream );
+  #else
+      if (literal_string_start == NULL)
+        literal_string_start = fmt - 1;
+  #endif
   }
 
   /* When we have fully dispatched the format string, the return value is the
    * total number of bytes we transferred to the output destination.
    */
+#ifdef __BUILD_WIDEAPI
+  if (literal_string_start)
+  {
+    stream.width = stream.precision = PFORMAT_IGNORE;
+    __pformat_wputchars( literal_string_start, fmt - literal_string_start - 1, &stream );
+  }
+#endif
+
   return stream.count;
 }
 

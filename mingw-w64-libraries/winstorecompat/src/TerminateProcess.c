@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -41,4 +41,8 @@ BOOL WINAPI TerminateProcess(HANDLE hProcess, UINT uExitCode)
     }
 }
 
+#ifndef _WIN64
 BOOL (WINAPI *__MINGW_IMP_SYMBOL(TerminateProcess))(HANDLE, UINT) asm("__imp__TerminateProcess@8") = TerminateProcess;
+#else
+BOOL (WINAPI *__MINGW_IMP_SYMBOL(TerminateProcess))(HANDLE, UINT) asm("__imp_TerminateProcess") = TerminateProcess;
+#endif

@@ -151,6 +151,7 @@ CreateFileMappingA
 CreateFileMappingNumaA
 CreateFileMappingNumaW
 CreateFileMappingW
+CreateFileMappingFromApp
 CreateFileTransactedA
 CreateFileTransactedW
 CreateFileW
@@ -885,6 +886,7 @@ MapUserPhysicalPagesScatter
 MapViewOfFile
 MapViewOfFileEx
 MapViewOfFileExNuma
+MapViewOfFileFromApp
 Module32First
 Module32FirstW
 Module32Next
@@ -1320,6 +1322,7 @@ VerifyVersionInfoW
 VirtualAlloc
 VirtualAllocEx
 VirtualAllocExNuma
+VirtualAllocFromApp
 VirtualFree
 VirtualFreeEx
 VirtualLock

@@ -6,6 +6,7 @@ lib_LIBRARIES = libwinstorecompat.a
 
 libwinstorecompat_a_SOURCES = \
   src/_wassert.c \
+  src/beginthread.c \
   src/GetModuleHandle.c \
   src/CreateEventW.c \
   src/CreateMutexW.c \
@@ -32,7 +33,7 @@ libwinstorecompat_a_SOURCES = \
   src/SetFilePointer.c \
   src/GetFileSize.c \
   src/Tls.c \
-  src/CoCreateInstance.c \
   src/SHGetFolderPathW.c \
   src/QueueTimer.c \
+  src/Crypto.c \
   $(NULL)

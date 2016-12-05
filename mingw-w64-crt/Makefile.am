@@ -71,23 +71,7 @@ _libm_dummy.c:
 
 src_libm=_libm_dummy.c
 
-lib32/DFP_src_%.dfp.obj: math/DFP/mpdecimal/libmpdec/%.c
-	$(COMPILE) $(CPPFLAGS32) -Wno-unknown-pragmas -std=gnu99 -DCONFIG_32 -DASM -DPPRO -DHAVE_GCC_ASM_FOR_X87=1 -DHAVE_INTTYPES_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STDINT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRINGS_H=1 -DHAVE_STRING_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_UNISTD_H=1 -DPACKAGE_BUGREPORT='"mpdecimal-bugs@bytereef.org"' -DPACKAGE_NAME='"mpdecimal"' -DPACKAGE_STRING='"mpdecimal 2.4.0"' -DPACKAGE_TARNAME='"mpdecimal"' -DPACKAGE_URL='"http://www.bytereef.org/mpdecimal/index.html"' -DPACKAGE_VERSION='"2.4.0"' -DSIZEOF_SIZE_T=4 -DSIZEOF___UINT128_T=0 -DSTDC_HEADERS=1 -O2 -Dmpdecimal_header=\"mpdecimal-i686.h\" -c $< -o $@
-
-lib64/DFP_src_%.dfp.obj: math/DFP/mpdecimal/libmpdec/%.c
-	$(COMPILE) $(CPPFLAGS64) -Wno-unknown-pragmas -std=gnu99 -DCONFIG_64 -DASM -DHAVE_GCC_ASM_FOR_X64=1 -DHAVE_GCC_ASM_FOR_X87=1 -DHAVE_INTTYPES_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STDINT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRINGS_H=1 -DHAVE_STRING_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_UINT128_T=1 -DHAVE_UNISTD_H=1 -DPACKAGE_BUGREPORT='"mpdecimal-bugs@bytereef.org"' -DPACKAGE_NAME='"mpdecimal"' -DPACKAGE_STRING='"mpdecimal 2.4.0"' -DPACKAGE_TARNAME='"mpdecimal"' -DPACKAGE_URL='"http://www.bytereef.org/mpdecimal/index.html"' -DPACKAGE_VERSION='"2.4.0"' -DSIZEOF_SIZE_T=8 -DSIZEOF___UINT128_T=16 -DSTDC_HEADERS=1 -O2 -Dmpdecimal_header=\"mpdecimal-x86_64.h\" -c $< -o $@
-
 if ENABLE_DFP
-obj_dfpsrc32 = \
-lib32/DFP_src_basearith.dfp.obj lib32/DFP_src_context.dfp.obj lib32/DFP_src_constants.dfp.obj lib32/DFP_src_convolute.dfp.obj lib32/DFP_src_crt.dfp.obj \
-lib32/DFP_src_mpdecimal.dfp.obj lib32/DFP_src_mpsignal.dfp.obj lib32/DFP_src_difradix2.dfp.obj lib32/DFP_src_fnt.dfp.obj lib32/DFP_src_fourstep.dfp.obj \
-lib32/DFP_src_io.dfp.obj lib32/DFP_src_memory.dfp.obj lib32/DFP_src_numbertheory.dfp.obj lib32/DFP_src_sixstep.dfp.obj lib32/DFP_src_transpose.dfp.obj
-
-obj_dfpsrc64 = \
-lib64/DFP_src_basearith.dfp.obj lib64/DFP_src_context.dfp.obj lib64/DFP_src_constants.dfp.obj lib64/DFP_src_convolute.dfp.obj lib64/DFP_src_crt.dfp.obj \
-lib64/DFP_src_mpdecimal.dfp.obj lib64/DFP_src_mpsignal.dfp.obj lib64/DFP_src_difradix2.dfp.obj lib64/DFP_src_fnt.dfp.obj lib64/DFP_src_fourstep.dfp.obj \
-lib64/DFP_src_io.dfp.obj lib64/DFP_src_memory.dfp.obj lib64/DFP_src_numbertheory.dfp.obj lib64/DFP_src_sixstep.dfp.obj lib64/DFP_src_transpose.dfp.obj
-
 src_dfp_math = \
 math/DFP/__fpclassifyd32.c math/DFP/__fpclassifyd64.c math/DFP/__fpclassifyd128.c \
 math/DFP/__isnand32.c math/DFP/__isnand64.c math/DFP/__isnand128.c \
@@ -95,9 +79,8 @@ math/DFP/__signbitd32.c math/DFP/__signbitd64.c math/DFP/__signbitd128.c \
 math/DFP/isinfd32.c math/DFP/isinfd64.c math/DFP/isinfd128.c
 
 else
-obj_dfpsrc32 =
-obj_dfpsrc64 =
 src_dfp_math =
+
 endif
 
 src_libshell32=libsrc/shell32.c
@@ -295,7 +278,7 @@ src_libmingwex=\
   \
   stdio/mingw_pformat.h    \
   stdio/vfscanf2.S         stdio/vfwscanf2.S         stdio/vscanf2.S          stdio/vsscanf2.S          stdio/vswscanf2.S \
-  stdio/vwscanf2.S         stdio/strtok_r.c          \
+  stdio/vwscanf2.S         stdio/strtok_r.c          stdio/scanf.S \
   stdio/_Exit.c            stdio/_findfirst64i32.c   stdio/_findnext64i32.c   stdio/_fstat.c \
   stdio/_fstat64i32.c      stdio/_ftime.c            stdio/_getc_nolock.c     stdio/_getwc_nolock.c     stdio/_putc_nolock.c    \
   stdio/_putwc_nolock.c    stdio/_stat.c             stdio/_stat64i32.c       stdio/_wfindfirst64i32.c  stdio/_wfindnext64i32.c \
@@ -347,8 +330,9 @@ src_libmingwex32=\
   math/sinf.c               math/sinl.c               math/sinl_internal.S      math/tanf.c               math/tanl.S
 
 # these only go into the ARM32 version:
+if ENABLE_SOFTMATH
 src_libmingwexarm32=\
-  math/softmath/e_fmod.c    math/softmath/e_fmodf.c   math/softmath/e_powf.c    \
+  math/softmath/e_fmod.c    math/softmath/e_fmodf.c   math/softmath/e_powf.c    math/softmath/e_pow.c \
   math/softmath/acosf.c     math/softmath/acosh.c     math/softmath/acosl.c     math/softmath/acoshf.c    math/softmath/acoshl.c    \
   math/softmath/asinf.c     math/softmath/asinh.c     math/softmath/asinl.c     math/softmath/asinhf.c    math/softmath/asinhl.c    \
   math/softmath/atan2f.c    math/softmath/atan2l.c    math/softmath/atanf.c     math/softmath/atanh.c     math/softmath/atanl.c     \
@@ -364,6 +348,11 @@ src_libmingwexarm32=\
   math/softmath/remquo.c    math/softmath/remquof.c   math/softmath/remquol.c   math/softmath/scalbn.c    math/softmath/scalbnf.c   \
   math/softmath/scalbnl.c   math/softmath/sin.c       math/softmath/sincos.c    math/softmath/sincosf.c   math/softmath/sincosl.c   \
   math/softmath/sinf.c      math/softmath/sinl.c      math/softmath/tanf.c      math/softmath/tanl.c
+else
+src_libmingwexarm32=\
+  math/arm/exp2.c           math/arm/log2.c           math/arm/scalbn.c
+endif
+
 
 
 # These intrinsics are target independent:
@@ -403,9 +392,6 @@ src_intrincs32=\
 # these only go into the ARM32 version:
 src_intrincsarm32=
 
-winrtlibs=\
-  winrt/libruntimeobject.a
-
 if LIB32
 #########
 # Compiling 32-bit runtime
@@ -415,8 +401,6 @@ lib32dir=$(prefix)/@LIBX8632SUFFIXDIR@
 crt32dir=$(lib32dir)
 winrt32dir=$(lib32dir)
 dx32dir=$(lib32dir)
-
-winrt32_DATA = $(winrtlibs)
 
 if !W32API
 crt32_DATA = \
@@ -601,7 +585,6 @@ lib32_libmingw32_a_SOURCES = $(src_libmingw32)
 lib32_LIBRARIES += lib32/libmingwex.a
 lib32_libmingwex_a_CPPFLAGS=$(CPPFLAGS32) $(extra_include) $(AM_CPPFLAGS)
 lib32_libmingwex_a_SOURCES = $(src_libmingwex) $(src_libmingwex32) $(src_dfp_math)
-lib32_libmingwex_a_LIBADD = $(obj_dfpsrc32)
 
 lib32_LIBRARIES += lib32/libmoldname.a
 lib32_libmoldname_a_CPPFLAGS=$(CPPFLAGS32) $(extra_include) $(AM_CPPFLAGS)
@@ -611,14 +594,18 @@ lib32_LIBRARIES += lib32/libmingwthrd.a
 lib32_libmingwthrd_a_SOURCES = $(src_libmingwthrd)
 lib32_libmingwthrd_a_CPPFLAGS=$(CPPFLAGS32) $(sysincludes)
 
-processed_defs += lib32/msvcrt.def lib32/msvcr80.def lib32/msvcr90.def lib32/msvcr90d.def lib32/msvcr100.def lib32/msvcr110.def lib32/msvcr120.def lib32/msvcr120d.def
+processed_defs += lib32/msvcrt.def lib32/msvcr80.def lib32/msvcr90.def lib32/msvcr90d.def lib32/msvcr100.def lib32/msvcr110.def lib32/msvcr120.def lib32/msvcr120d.def \
+				  lib32/msvcr120_app.def lib32/msvcp120_app.def
 
 endif
 
 include lib32/Makefile.am
 
 if !W32API
-lib32_DATA += lib32/libglut.a lib32/libmsvcp60.a lib32/libmsvcr80.a lib32/libmsvcr90.a lib32/libmsvcr90d.a lib32/libmsvcr100.a lib32/libmsvcr110.a lib32/libmsvcr120.a lib32/libmsvcr120d.a lib32/libcrtdll.a
+lib32_DATA += lib32/libglut.a lib32/libmsvcp60.a lib32/libmsvcr80.a lib32/libmsvcr90.a lib32/libmsvcr90d.a lib32/libmsvcr100.a \
+			  lib32/libmsvcr110.a lib32/libmsvcr120.a lib32/libmsvcr120d.a lib32/libcrtdll.a \
+			  lib32/libmsvcr120_app.a lib32/libmsvcp120_app.a
+
 endif
 
 # combine these two rules with the ones for lib64
@@ -634,6 +621,16 @@ lib32/lib%.a: lib32/%.def
 # NB: With older dlltool, the object file members will not have unique
 # names.
 lib32/libvfw32.a: lib32/vfw32.mri lib32/libmsvfw32.a lib32/libavifil32.a lib32/libavicap32.a
+	rm -f $@
+	$(AR) -M < $<
+	$(RANLIB) $@
+
+lib32/libruntimeobject.a: lib32/runtimeobject.mri lib32/libapi-ms-win-core-winrt-string-l1-1-0.a lib32/libapi-ms-win-core-winrt-l1-1-0.a
+	rm -f $@
+	$(AR) -M < $<
+	$(RANLIB) $@
+
+lib32/libsynchronization.a: lib32/synchronization.mri lib32/libapi-ms-win-core-synch-l1-2-0.a
 	rm -f $@
 	$(AR) -M < $<
 	$(RANLIB) $@
@@ -680,8 +677,6 @@ lib64dir=$(prefix)/@LIBX8664SUFFIXDIR@
 crt64dir=$(lib64dir)
 winrt64dir=$(lib64dir)
 dx64dir=$(lib64dir)
-
-winrt64_DATA = $(winrtlibs)
 
 if !W32API
 crt64_DATA = \
@@ -858,7 +853,6 @@ lib64_libmingw32_a_SOURCES = $(src_libmingw32)
 lib64_LIBRARIES += lib64/libmingwex.a
 lib64_libmingwex_a_CPPFLAGS=$(CPPFLAGS64) $(extra_include) $(AM_CPPFLAGS)
 lib64_libmingwex_a_SOURCES = $(src_libmingwex) $(src_libmingwex64) $(src_dfp_math)
-lib64_libmingwex_a_LIBADD = $(obj_dfpsrc64)
 
 lib64_LIBRARIES += lib64/libmoldname.a
 lib64_libmoldname_a_CPPFLAGS=$(CPPFLAGS64) $(extra_include) $(AM_CPPFLAGS)
@@ -868,7 +862,9 @@ lib64_LIBRARIES += lib64/libmingwthrd.a
 lib64_libmingwthrd_a_SOURCES = $(src_libmingwthrd)
 lib64_libmingwthrd_a_CPPFLAGS=$(CPPFLAGS64) $(sysincludes)
 
-processed_defs += lib64/msvcrt.def lib64/msvcr80.def lib64/msvcr90.def lib64/msvcr90d.def lib64/msvcr100.def lib64/msvcr110.def lib64/msvcr120.def lib64/msvcr120d.def
+processed_defs += lib64/msvcrt.def lib64/msvcr80.def lib64/msvcr90.def lib64/msvcr90d.def \
+				  lib64/msvcr100.def lib64/msvcr110.def lib64/msvcr120.def lib64/msvcr120d.def \
+				  lib64/msvcr120_app.def lib64/msvcp120_app.def
 
 endif
 
@@ -1112,7 +1108,7 @@ lib64_DATA = \
   lib64/libtdh.a        lib64/libtxfw32.a     lib64/libwlanui.a      lib64/libwlanapi.a     lib64/libwlanutil.a      \
   lib64/libwer.a        lib64/libndis.a       lib64/libd2d1.a        lib64/libwdscsl.a      lib64/libpcwum.a         \
   lib64/libwdscore.a    lib64/libcryptsp.a    lib64/libwdsclient.a   lib64/libwdsupgcompl.a lib64/libwdsclientapi.a  \
-  lib64/libwdsutil.a    lib64/libwdsimage.a      \
+  lib64/libwdsutil.a    lib64/libwdsimage.a   lib64/libvirtdisk.a    \
   \
   lib64/libcryptxml.a   lib64/libsspicli.a    \
   \
@@ -1141,10 +1137,13 @@ lib64_DATA = \
   lib64/libxaudio2_8.a      lib64/libd3dcompiler_46.a lib64/libd3dcsx_46.a \
   lib64/libd3d11.a          lib64/libd3dcompiler_47.a \
   lib64/libwinhttp.a \
-  lib64/libruntimeobject.a
+  lib64/libruntimeobject.a \
+  lib64/libsynchronization.a
 
 if !W32API
-lib64_DATA += lib64/libmsvcp60.a lib64/libmsvcr80.a lib64/libmsvcr90.a lib64/libmsvcr100.a lib64/libmsvcr90d.a lib64/libmsvcr110.a lib64/libmsvcr120.a lib64/libmsvcr120d.a lib64/libcrtdll.a
+lib64_DATA += lib64/libmsvcp60.a lib64/libmsvcr80.a lib64/libmsvcr90.a lib64/libmsvcr100.a lib64/libmsvcr90d.a \
+			  lib64/libmsvcr110.a lib64/libmsvcr120.a lib64/libmsvcr120d.a lib64/libcrtdll.a \
+			  lib64/libmsvcr120_app.a lib64/libmsvcp120_app.a
 endif
 
 lib64/libcrtdll.a lib64/libmsvcr80.a: lib64/lib%.a: lib64/%.def
@@ -1158,6 +1157,16 @@ lib64/lib%.a: lib64/%.def
 # NB: With older dlltool, the object file members will not have unique
 # names.
 lib64/libvfw32.a: lib64/vfw32.mri lib64/libmsvfw32.a lib64/libavifil32.a lib64/libavicap32.a
+	rm -f $@
+	$(AR) -M < $<
+	$(RANLIB) $@
+
+lib64/libruntimeobject.a: lib64/runtimeobject.mri lib64/libapi-ms-win-core-winrt-string-l1-1-0.a lib64/libapi-ms-win-core-winrt-l1-1-0.a
+	rm -f $@
+	$(AR) -M < $<
+	$(RANLIB) $@
+
+lib64/libsynchronization.a: lib64/synchronization.mri lib64/libapi-ms-win-core-synch-l1-2-0.a
 	rm -f $@
 	$(AR) -M < $<
 	$(RANLIB) $@
@@ -1204,8 +1213,6 @@ libarm32dir=$(prefix)/@LIBARM32SUFFIXDIR@
 crt32dir=$(libarm32dir)
 winrt32dir=$(libarm32dir)
 dx32dir=$(libarm32dir)
-
-winrt32_DATA = $(winrtlibs)
 
 if !W32API
 crt32_DATA = \
@@ -1380,7 +1387,6 @@ libarm32_libmingw32_a_SOURCES = $(src_libmingw32)
 libarm32_LIBRARIES += libarm32/libmingwex.a
 libarm32_libmingwex_a_CPPFLAGS=$(CPPFLAGSARM32) $(extra_include) $(AM_CPPFLAGS)
 libarm32_libmingwex_a_SOURCES = $(src_libmingwex) $(src_libmingwexarm32) $(src_dfp_math)
-libarm32_libmingwex_a_LIBADD = $(obj_dfpsrc32)
 
 libarm32_LIBRARIES += libarm32/libmoldname.a
 libarm32_libmoldname_a_CPPFLAGS=$(CPPFLAGSARM32) $(extra_include) $(AM_CPPFLAGS)
@@ -1417,9 +1423,20 @@ libarm32/libvfw32.a: libarm32/vfw32.mri libarm32/libmsvfw32.a libarm32/libavifil
 	$(AR) -M < $<
 	$(RANLIB) $@
 
+libarm32/libruntimeobject.a: libarm32/runtimeobject.mri libarm32/libapi-ms-win-core-winrt-string-l1-1-0.a libarm32/libapi-ms-win-core-winrt-l1-1-0.a
+	rm -f $@
+	$(AR) -M < $<
+	$(RANLIB) $@
+
+libarm32/libsynchronization.a: libarm32/synchronization.mri libarm32/libapi-ms-win-core-synch-l1-2-0.a
+	rm -f $@
+	$(AR) -M < $<
+	$(RANLIB) $@
+
 dx32_DATA =
 dx32_DATA += libarm32/libxinput.a
 dx32_DATA += libarm32/libd3dcompiler.a
+libarm32_DATA += libarm32/libruntimeobject.a libarm32/libsynchronization.a
 
 libarm32/libxinput.a: libarm32/xinput1_4.def
 	$(DTDEFARM32) $<
@@ -1466,7 +1483,6 @@ EXTRA_DIST += revstamp.h \
   $(top_srcdir)/lib32/*.def.in \
   $(top_srcdir)/lib64/*.def.in \
   $(top_srcdir)/def-include/*.def.in \
-  $(top_srcdir)/$(winrtlibs) \
   crt/binmode.c \
   crt/crtbegin.c \
   crt/crtdll.c \
@@ -1481,189 +1497,6 @@ EXTRA_DIST += revstamp.h \
   profile/gcrt0.c \
   profile/COPYING \
   profile/CYGWIN_LICENSE
-
-EXTRA_DIST += math/DFP/mpdecimal-2.3/.hg_archival.txt \
-math/DFP/mpdecimal-2.3/basearith.c \
-math/DFP/mpdecimal-2.3/basearith.h \
-math/DFP/mpdecimal-2.3/bench.c \
-math/DFP/mpdecimal-2.3/bits.h \
-math/DFP/mpdecimal-2.3/cdecimal2.c \
-math/DFP/mpdecimal-2.3/cdecimal3.c \
-math/DFP/mpdecimal-2.3/CHANGELOG.txt \
-math/DFP/mpdecimal-2.3/cmd/compare.c \
-math/DFP/mpdecimal-2.3/cmd/div.c \
-math/DFP/mpdecimal-2.3/cmd/divmod.c \
-math/DFP/mpdecimal-2.3/cmd/multiply.c \
-math/DFP/mpdecimal-2.3/cmd/pow.c \
-math/DFP/mpdecimal-2.3/cmd/powmod.c \
-math/DFP/mpdecimal-2.3/cmd/README.txt \
-math/DFP/mpdecimal-2.3/cmd/shift.c \
-math/DFP/mpdecimal-2.3/cmd/sqrt.c \
-math/DFP/mpdecimal-2.3/config.h.in \
-math/DFP/mpdecimal-2.3/configure \
-math/DFP/mpdecimal-2.3/configure.in \
-math/DFP/mpdecimal-2.3/constants.c \
-math/DFP/mpdecimal-2.3/constants.h \
-math/DFP/mpdecimal-2.3/context.c \
-math/DFP/mpdecimal-2.3/convolute.c \
-math/DFP/mpdecimal-2.3/convolute.h \
-math/DFP/mpdecimal-2.3/crt.c \
-math/DFP/mpdecimal-2.3/crt.h \
-math/DFP/mpdecimal-2.3/difradix2.c \
-math/DFP/mpdecimal-2.3/difradix2.h \
-math/DFP/mpdecimal-2.3/doc/cdecimal/index.html \
-math/DFP/mpdecimal-2.3/doc/index.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/arithmetic.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/assign-convert.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/attributes.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/context.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/decimals.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/functions.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/index.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/memory.html \
-math/DFP/mpdecimal-2.3/doc/libmpdec/various.html \
-math/DFP/mpdecimal-2.3/doc/LICENSE.txt \
-math/DFP/mpdecimal-2.3/doc/objects.inv \
-math/DFP/mpdecimal-2.3/doc/search.html \
-math/DFP/mpdecimal-2.3/doc/searchindex.js \
-math/DFP/mpdecimal-2.3/doc/_static/basic.css \
-math/DFP/mpdecimal-2.3/doc/_static/default.css \
-math/DFP/mpdecimal-2.3/doc/_static/doctools.js \
-math/DFP/mpdecimal-2.3/doc/_static/file.png \
-math/DFP/mpdecimal-2.3/doc/_static/jquery.js \
-math/DFP/mpdecimal-2.3/doc/_static/minus.png \
-math/DFP/mpdecimal-2.3/doc/_static/mpdecimal-doc.css \
-math/DFP/mpdecimal-2.3/doc/_static/plus.png \
-math/DFP/mpdecimal-2.3/doc/_static/pygments.css \
-math/DFP/mpdecimal-2.3/doc/_static/searchtools.js \
-math/DFP/mpdecimal-2.3/doc/_static/sidebar.js \
-math/DFP/mpdecimal-2.3/doc/_static/underscore.js \
-math/DFP/mpdecimal-2.3/docstrings.h \
-math/DFP/mpdecimal-2.3/fnt.c \
-math/DFP/mpdecimal-2.3/fnt.h \
-math/DFP/mpdecimal-2.3/fourstep.c \
-math/DFP/mpdecimal-2.3/fourstep.h \
-math/DFP/mpdecimal-2.3/io.c \
-math/DFP/mpdecimal-2.3/io.h \
-math/DFP/mpdecimal-2.3/LIBINSTALL.txt \
-math/DFP/mpdecimal-2.3/LICENSE.txt \
-math/DFP/mpdecimal-2.3/literature/mpdecimal.lisp \
-math/DFP/mpdecimal-2.3/literature/README.txt \
-math/DFP/mpdecimal-2.3/literature/umodarith.lisp \
-math/DFP/mpdecimal-2.3/Makefile.in \
-math/DFP/mpdecimal-2.3/Makefile.vc \
-math/DFP/mpdecimal-2.3/memory.c \
-math/DFP/mpdecimal-2.3/memory.h \
-math/DFP/mpdecimal-2.3/mpdecimal-i686.h \
-math/DFP/mpdecimal-2.3/mpdecimal-x86_64.h \
-math/DFP/mpdecimal-2.3/mpdecimal.c \
-math/DFP/mpdecimal-2.3/mpdecimal.h.in \
-math/DFP/mpdecimal-2.3/mpdecimal32vc.h \
-math/DFP/mpdecimal-2.3/mpdecimal64vc.h \
-math/DFP/mpdecimal-2.3/mpsignal.c \
-math/DFP/mpdecimal-2.3/mptest.h \
-math/DFP/mpdecimal-2.3/mptypes.h \
-math/DFP/mpdecimal-2.3/numbertheory.c \
-math/DFP/mpdecimal-2.3/numbertheory.h \
-math/DFP/mpdecimal-2.3/PKG-INFO \
-math/DFP/mpdecimal-2.3/PYINSTALL.txt \
-math/DFP/mpdecimal-2.3/python/Bench.class \
-math/DFP/mpdecimal-2.3/python/Bench.java \
-math/DFP/mpdecimal-2.3/python/bench.py \
-math/DFP/mpdecimal-2.3/python/BENCHMARK.txt \
-math/DFP/mpdecimal-2.3/python/build_all_branches.bat \
-math/DFP/mpdecimal-2.3/python/build_all_branches.sh \
-math/DFP/mpdecimal-2.3/python/build_all_releases.sh \
-math/DFP/mpdecimal-2.3/python/ctx-deccheck2.py \
-math/DFP/mpdecimal-2.3/python/deccheck2.py \
-math/DFP/mpdecimal-2.3/python/deccheck3.py \
-math/DFP/mpdecimal-2.3/python/failapi2.diff \
-math/DFP/mpdecimal-2.3/python/failapi3.diff \
-math/DFP/mpdecimal-2.3/python/formathelper.py \
-math/DFP/mpdecimal-2.3/python/genlocale.py \
-math/DFP/mpdecimal-2.3/python/genrandformat.py \
-math/DFP/mpdecimal-2.3/python/genrandlocale.py \
-math/DFP/mpdecimal-2.3/python/gettests.bat \
-math/DFP/mpdecimal-2.3/python/gettests.sh \
-math/DFP/mpdecimal-2.3/python/get_all_branches.bat \
-math/DFP/mpdecimal-2.3/python/get_all_branches.sh \
-math/DFP/mpdecimal-2.3/python/get_all_releases.sh \
-math/DFP/mpdecimal-2.3/python/randdec.py \
-math/DFP/mpdecimal-2.3/python/randfloat.py \
-math/DFP/mpdecimal-2.3/python/README.txt \
-math/DFP/mpdecimal-2.3/python/runall-amd64.bat \
-math/DFP/mpdecimal-2.3/python/runall-memorydebugger.sh \
-math/DFP/mpdecimal-2.3/python/runall-refleak.bat \
-math/DFP/mpdecimal-2.3/python/runall-releases.sh \
-math/DFP/mpdecimal-2.3/python/runall-x86.bat \
-math/DFP/mpdecimal-2.3/python/runall.sh \
-math/DFP/mpdecimal-2.3/python/test_cdecimal2.5.py \
-math/DFP/mpdecimal-2.3/python/test_cdecimal2.py \
-math/DFP/mpdecimal-2.3/python/test_cdecimal3.py \
-math/DFP/mpdecimal-2.3/python/valgrind.supp \
-math/DFP/mpdecimal-2.3/README.txt \
-math/DFP/mpdecimal-2.3/setup.py \
-math/DFP/mpdecimal-2.3/sixstep.c \
-math/DFP/mpdecimal-2.3/sixstep.h \
-math/DFP/mpdecimal-2.3/tests/additional.decTest \
-math/DFP/mpdecimal-2.3/tests/cov.c \
-math/DFP/mpdecimal-2.3/tests/covreport.py \
-math/DFP/mpdecimal-2.3/tests/deccheck.c \
-math/DFP/mpdecimal-2.3/tests/dnloop-windows.patch \
-math/DFP/mpdecimal-2.3/tests/dnloop.patch \
-math/DFP/mpdecimal-2.3/tests/fntcov.c \
-math/DFP/mpdecimal-2.3/tests/fullcov_header.patch \
-math/DFP/mpdecimal-2.3/tests/getdn.bat \
-math/DFP/mpdecimal-2.3/tests/getdn.sh \
-math/DFP/mpdecimal-2.3/tests/gettests.bat \
-math/DFP/mpdecimal-2.3/tests/gettests.sh \
-math/DFP/mpdecimal-2.3/tests/karatsuba_fnt.c \
-math/DFP/mpdecimal-2.3/tests/karatsuba_fnt2.c \
-math/DFP/mpdecimal-2.3/tests/Makefile.in \
-math/DFP/mpdecimal-2.3/tests/Makefile.vc \
-math/DFP/mpdecimal-2.3/tests/malloc_fail.c \
-math/DFP/mpdecimal-2.3/tests/malloc_fail.h \
-math/DFP/mpdecimal-2.3/tests/mpd_mpz_add.c \
-math/DFP/mpdecimal-2.3/tests/mpd_mpz_divmod.c \
-math/DFP/mpdecimal-2.3/tests/mpd_mpz_mul.c \
-math/DFP/mpdecimal-2.3/tests/mpd_mpz_sub.c \
-math/DFP/mpdecimal-2.3/tests/official.decTest \
-math/DFP/mpdecimal-2.3/tests/ppro_mulmod.c \
-math/DFP/mpdecimal-2.3/tests/README.txt \
-math/DFP/mpdecimal-2.3/tests/runallconfigs.bat \
-math/DFP/mpdecimal-2.3/tests/runallconfigs.sh \
-math/DFP/mpdecimal-2.3/tests/runalltests.bat \
-math/DFP/mpdecimal-2.3/tests/runalltests.sh \
-math/DFP/mpdecimal-2.3/tests/runshort.bat \
-math/DFP/mpdecimal-2.3/tests/runshort.sh \
-math/DFP/mpdecimal-2.3/tests/runtest.c \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/baseconv.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/binop_eq.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/cov.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/divmod.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/divmod_eq.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/extra.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/fma_eq.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/format.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/getint.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/invroot.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/largeint.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/powmod.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/powmod_eq.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/shiftlr.decTest \
-math/DFP/mpdecimal-2.3/tests/testdata_dist/testruntest.decTest \
-math/DFP/mpdecimal-2.3/tests/test_transpose.c \
-math/DFP/mpdecimal-2.3/tools/release.sh \
-math/DFP/mpdecimal-2.3/tools/replace.sh \
-math/DFP/mpdecimal-2.3/tools/todos.sh \
-math/DFP/mpdecimal-2.3/transpose.c \
-math/DFP/mpdecimal-2.3/transpose.h \
-math/DFP/mpdecimal-2.3/typearith.h \
-math/DFP/mpdecimal-2.3/umodarith.h \
-math/DFP/mpdecimal-2.3/vars.mk \
-math/DFP/mpdecimal-2.3/vccompat.h \
-math/DFP/mpdecimal-2.3/vcdiv64.asm \
-math/DFP/mpdecimal-2.3/vcstdint.h
 
 DISTCHECK_CONFIGURE_FLAGS = --host=$(host_triplet) $(withsys)
 

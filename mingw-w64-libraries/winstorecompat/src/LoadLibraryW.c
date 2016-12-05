@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -34,4 +34,8 @@ HMODULE WINAPI LoadLibraryW(LPCWSTR lpFileName)
     return LoadPackagedLibrary(lpFileName, 0);
 }
 
+#ifndef _WIN64
 HMODULE (WINAPI *__MINGW_IMP_SYMBOL(LoadLibraryW))(LPCWSTR lpFileName) asm("__imp__LoadLibraryW@4") = LoadLibraryW;
+#else
+HMODULE (WINAPI *__MINGW_IMP_SYMBOL(LoadLibraryW))(LPCWSTR lpFileName) asm("__imp_LoadLibraryW") = LoadLibraryW;
+#endif

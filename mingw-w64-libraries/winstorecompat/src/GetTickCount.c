@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2013 mingw-w64 project
+    Copyright (c) 2013-2016 mingw-w64 project
 
     Contributing authors: Jean-Baptiste Kempf
 
@@ -34,4 +34,8 @@ DWORD WINAPI GetTickCount(void)
     return (DWORD)GetTickCount64();
 }
 
+#ifndef _WIN64
 DWORD (WINAPI *__MINGW_IMP_SYMBOL(GetTickCount))(void) asm("__imp__GetTickCount@0") = GetTickCount;
+#else
+DWORD (WINAPI *__MINGW_IMP_SYMBOL(GetTickCount))(void) asm("__imp_GetTickCount") = GetTickCount;
+#endif

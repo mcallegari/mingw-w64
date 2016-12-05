@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2011 mingw-w64 project
+   Copyright (c) 2011-2016  mingw-w64 project
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -296,7 +296,10 @@ push_pthread_mem (_pthread_v *sv)
   if (pthr_last == NULL)
     pthr_root = pthr_last = sv;
   else
+  {
     pthr_last->next = sv;
+    pthr_last = sv;
+  }
   pthread_mutex_unlock (&mtx_pthr_locked);
 }
 
@@ -1691,12 +1694,12 @@ _pthread_tryjoin (pthread_t t, void **res)
     }
   if(tv->ended == 0 && WaitForSingleObject(tv->h, 0))
     {
-      if (tv->ended == 0);
+      if (tv->ended == 0)
         {
-	  pthread_mutex_unlock (&mtx_pthr_locked);
-	  /* pthread_testcancel (); */
-	  return EBUSY;
-	}
+	      pthread_mutex_unlock (&mtx_pthr_locked);
+	      /* pthread_testcancel (); */
+	      return EBUSY;
+	    }
     }
   CloseHandle (tv->h);
   if (tv->evStart)
