@@ -364,38 +364,4 @@ DECLARE_INTERFACE_(IDWriteFactory2,IDWriteFactory1)
 
 __CRT_UUID_DECL(IDWriteFactory2, 0x0439fc60,0xca44,0x4994,0x8d,0xee,0x3a,0x9a,0xf7,0xb7,0x32,0xec)
 
-#undef  INTERFACE
-#define INTERFACE IDWriteFontFace2
-DECLARE_INTERFACE_(IDWriteFontFace2,IDWriteFontFace1)
-{
-    BEGIN_INTERFACE
-
-	STDMETHOD_(BOOL, IsColorFont)() PURE;
-	STDMETHOD_(UINT32, GetColorPaletteCount)() PURE;
-	STDMETHOD_(UINT32, GetPaletteEntryCount)() PURE;
-	    STDMETHOD(GetPaletteEntries)(
-        UINT32 colorPaletteIndex,
-        UINT32 firstEntryIndex,
-        UINT32 entryCount,
-        _Out_writes_(entryCount) DWRITE_COLOR_F* paletteEntries
-        ) PURE;
-	
-	STDMETHOD(GetRecommendedRenderingMode)(
-        FLOAT fontEmSize,
-        FLOAT dpiX,
-        FLOAT dpiY,
-        _In_opt_ DWRITE_MATRIX const* transform,
-        BOOL isSideways,
-        DWRITE_OUTLINE_THRESHOLD outlineThreshold,
-        DWRITE_MEASURING_MODE measuringMode,
-        _In_opt_ IDWriteRenderingParams* renderingParams,
-        _Out_ DWRITE_RENDERING_MODE* renderingMode,
-        _Out_ DWRITE_GRID_FIT_MODE* gridFitMode
-        ) PURE;
-
-    END_INTERFACE
-};
-
-__CRT_UUID_DECL(IDWriteFontFace2, 0xd8b768ff,0x64bc,0x4e66,0x98,0x2b,0xec,0x8e,0x87,0xf6,0x93,0xf7)
-
 #endif /* DWRITE_2_H_INCLUDED */
